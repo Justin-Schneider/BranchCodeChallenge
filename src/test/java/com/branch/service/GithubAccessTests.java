@@ -5,14 +5,14 @@ import com.branch.model.GithubUserResponse;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.web.client.HttpClientErrorException;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 @SpringBootTest
@@ -53,5 +53,37 @@ public class GithubAccessTests {
         verify(githubAccessService, times(1)).getGithubRepos(userId);
         assertNotNull(githubRepoResponses);
         assertEquals(githubRepoResponses.get(0).getName(), testResponses.get(0).getName());
+    }
+
+    @Test
+    public void github_access_service_get_user_exception(){
+        String userId = "invalidUser";
+        ReflectionTestUtils.setField(githubAccessService, "url", "https://api.github.com/");
+
+        when(githubAccessService.getGithubUser(userId)).thenThrow(new HttpClientErrorException(HttpStatus.NOT_FOUND, "Not Found"));
+        HttpClientErrorException thrown = assertThrows(HttpClientErrorException.class, () -> {
+            githubAccessService.getGithubUser(userId);
+        });
+
+        assertEquals("404 Not Found", thrown.getMessage());
+        assertEquals(HttpStatus.NOT_FOUND, thrown.getStatusCode());
+
+        verify(githubAccessService, times(1)).getGithubUser(userId);
+    }
+
+    @Test
+    public void github_access_service_get_user_repos_exception(){
+        String userId = "invalidUser";
+        ReflectionTestUtils.setField(githubAccessService, "url", "https://api.github.com/");
+
+        when(githubAccessService.getGithubRepos(userId)).thenThrow(new HttpClientErrorException(HttpStatus.NOT_FOUND, "Not Found"));
+        HttpClientErrorException thrown = assertThrows(HttpClientErrorException.class, () -> {
+            githubAccessService.getGithubRepos(userId);
+        });
+
+        assertEquals("404 Not Found", thrown.getMessage());
+        assertEquals(HttpStatus.NOT_FOUND, thrown.getStatusCode());
+
+        verify(githubAccessService, times(1)).getGithubRepos(userId);
     }
 }

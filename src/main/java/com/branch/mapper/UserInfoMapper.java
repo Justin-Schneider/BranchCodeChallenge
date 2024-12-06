@@ -11,7 +11,6 @@ import java.util.List;
 public class UserInfoMapper {
 
     public UserInfo toUserInfo(GithubUserResponse user, List<GithubRepoResponse> repoResponses) {
-
         UserInfo info = new UserInfo();
         info.setUserName(user.getLogin());
         info.setDisplayName(user.getName());
