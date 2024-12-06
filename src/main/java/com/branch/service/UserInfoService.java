@@ -11,26 +11,41 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+/**
+ * Service class for managing user information by integrating with GitHub API and Redis cache.
+ *
+ * This service is responsible for retrieving user information, including their details and repositories,
+ * from GitHub. It first checks the Redis cache for existing user data. If the data is not available,
+ * it fetches the data from GitHub, maps it to a `UserInfo` model, and stores it in Redis for future use.
+ */
 @Service
 public class UserInfoService {
 
     private static final Logger logger = LoggerFactory.getLogger(UserInfoService.class);
     private final GithubAccessService githubAccessService;
+    private final RedisService redisService;
     private final UserInfoMapper mapper;
 
     @Autowired
-    public UserInfoService(GithubAccessService githubAccessService) {
+    public UserInfoService(GithubAccessService githubAccessService, RedisService redisService) {
         this.githubAccessService = githubAccessService;
+        this.redisService = redisService;
         this.mapper = new UserInfoMapper();
     }
 
     public UserInfo getUserInfo(String userId) {
         logger.info("Starting to retrieve user info for userId: {}", userId);
-        GithubUserResponse userResponse = githubAccessService.getGithubUser(userId);
-        List<GithubRepoResponse> repoResponses = githubAccessService.getGithubRepos(userId);
 
-        logger.debug("Mapping GitHub responses to UserInfo model for userId: {}", userId);
-        UserInfo userInfo = mapper.toUserInfo(userResponse, repoResponses);
+        UserInfo userInfo = redisService.get(userId);
+
+        if (userInfo == null) {
+            GithubUserResponse userResponse = githubAccessService.getGithubUser(userId);
+            List<GithubRepoResponse> repoResponses = githubAccessService.getGithubRepos(userId);
+
+            logger.debug("Mapping GitHub responses to UserInfo model for userId: {}", userId);
+            userInfo = mapper.toUserInfo(userResponse, repoResponses);
+            redisService.save(userId, userInfo);
+        }
 
         logger.info("Successfully retrieved and mapped user info: {}", userInfo);
         return userInfo;

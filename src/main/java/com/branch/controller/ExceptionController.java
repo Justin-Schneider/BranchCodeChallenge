@@ -10,6 +10,13 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.server.ResponseStatusException;
 
+/**
+ * Global exception handler for handling various exceptions across the application.
+ *
+ * This class uses {@link ControllerAdvice} to handle different types of exceptions
+ * globally and provide custom responses with meaningful error messages and appropriate
+ * HTTP status codes.
+ */
 @ControllerAdvice
 public class ExceptionController {
 
@@ -23,7 +30,7 @@ public class ExceptionController {
     }
 
     @ExceptionHandler(ResponseStatusException.class)
-    public ResponseEntity<ErrorResponse> handleGeneralException(ResponseStatusException ex) {
+    public ResponseEntity<ErrorResponse> handleResponseStatusException(ResponseStatusException ex) {
         logger.error("Bad Request: {}", ex.getMessage());
         ErrorResponse errorResponse = new ErrorResponse("Bad Request", ex.getMessage());
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);

@@ -8,6 +8,13 @@ import com.branch.model.UserInfo;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * A utility class that maps data from GitHub API responses to the internal model objects.
+ *
+ * This class is responsible for converting GitHub-specific data types, such as {@link GithubUserResponse}
+ * and {@link GithubRepoResponse}, into the corresponding internal models used in the application,
+ * such as {@link UserInfo} and {@link Repo}.
+ */
 public class UserInfoMapper {
 
     public UserInfo toUserInfo(GithubUserResponse user, List<GithubRepoResponse> repoResponses) {

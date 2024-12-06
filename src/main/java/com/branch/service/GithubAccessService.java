@@ -10,11 +10,16 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 
+/**
+ * Service class that interacts with the GitHub API to retrieve user information and repositories.
+ *
+ * This service provides methods to fetch a user's details and repositories from GitHub by
+ * using the GitHub API. The URL for the API endpoint is configurable via the application properties.
+ */
 @Service
 public class GithubAccessService {
 
@@ -39,6 +44,7 @@ public class GithubAccessService {
             );
             logger.info("Response from Github for User Information: {}", response);
             return response.getBody();
+
         } catch (Exception ex) {
             logger.error("Error retrieving user information from GitHub for user '{}': {}", userId, ex.getMessage());
             throw new RuntimeException("An error occurred while retrieving user information from GitHub.", ex);

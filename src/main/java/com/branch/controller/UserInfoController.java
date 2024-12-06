@@ -13,7 +13,14 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.regex.Pattern;
 
-
+/**
+ * Controller class that handles HTTP requests related to user information.
+ *
+ * This class defines a RESTful endpoint to retrieve user information from GitHub based on a given userId.
+ * It validates the provided userId to ensure it conforms to GitHub's username format and calls the
+ * {@link UserInfoService} to retrieve and return the user details. If the username is invalid, a 400 Bad Request
+ * response is returned with an appropriate error message.
+ */
 @RestController
 public class UserInfoController {
 
